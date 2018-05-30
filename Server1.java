@@ -52,7 +52,7 @@ public class Server1 extends Thread {
             while(count++<5) {
               cords = in.readUTF();
               System.out.println("Recieved: "+cords);
-              if(cords == "NONE") {
+              if(cords.equals("NONE")) {
                 out.writeUTF("SERVER: no input!");
               }
               else {
