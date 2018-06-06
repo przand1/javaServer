@@ -20,8 +20,11 @@ public class Client {
 
       clientOutput.writeUTF("LOGIN "+login);
       System.out.println("Waiting for START...");
-      System.out.println(clientInput.readUTF());
+      System.out.println(clientInput.readUTF());//START
 
+      System.out.println(clientInput.readUTF());//PLAYERS
+      System.out.println("Enter direction {W,A,S,D}:");
+      clientOutput.writeUTF(reader.readLine());//DIRECTION
 
       reader.close();
       clientInput.close();
