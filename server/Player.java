@@ -10,8 +10,8 @@ public class Player {
 
   public Player(int ID) {
     Random r = new Random();
-    X = (int)(1+r.nextInt(50));
-    Y = (int)(1+r.nextInt(50));
+    X = (int)(r.nextInt(50));
+    Y = (int)(r.nextInt(50));
     this.ID = ID;
   }
   public void setID( int ID ) { this.ID = ID; }
