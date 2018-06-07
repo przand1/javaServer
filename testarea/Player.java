@@ -1,4 +1,4 @@
-package server;
+package testarea;
 
 import java.util.Random;
 

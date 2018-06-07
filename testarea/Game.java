@@ -1,4 +1,4 @@
-package server;
+package testarea;
 
 import java.util.Random;
 
@@ -40,8 +40,7 @@ public class Game {
   }
 
   public void chngPlayerDir(int playerId,char dir) { //WYWOŁYWANE PRZEZ SERWER
-    playerList[playerId-1].setDir(dir);
-    System.out.println("GAME: invoked Player.setDir() for Player "+playerList[playerId-1].getID());
+    playerList[playerId].setDir(dir);
   }
 
   public void runOneTurn() {                    //DODAĆ OBSŁUGĘ KOLIZJII

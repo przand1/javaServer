@@ -1,3 +1,5 @@
+package testarea;
+
 import java.net.*;
 import java.io.*;
 
@@ -35,7 +37,7 @@ public class Client {
       while(!((board=clientInput.readUTF()).equals("END"))) {
         System.out.print(board+'\n');
         if(inputer.getDirChanged()) {
-          clientOutput.writeUTF(inputer.getDir()+"");
+          clientOutput.writeUTF("MOVE "+inputer.getDir());
           inputer.setDirChanged();
         }
       }
