@@ -2,6 +2,7 @@ package client;
 
 import java.net.*;
 import java.io.*;
+import java.util.concurrent.TimeUnit;
 
 public class Client {
 
@@ -34,7 +35,12 @@ public class Client {
       Inputer inputer = new Inputer();
       inputer.start();
 
-      while(!((board=clientInput.readUTF()).equals("END"))) {
+      while(true) {
+        board=clientInput.readUTF();
+        if (board.equals("LOST") || board.equals("WIN")) {
+          System.out.println("YOU "+board);
+          break;
+        }
         System.out.print(board+'\n');
         if(inputer.getDirChanged()) {
           clientOutput.writeUTF("MOVE "+inputer.getDir());
@@ -44,7 +50,6 @@ public class Client {
 
       inputer.setStop();
 
-      System.out.println("EXITING");
       reader.close();
       clientInput.close();
       clientOutput.close();

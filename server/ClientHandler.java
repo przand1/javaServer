@@ -20,12 +20,12 @@ public class ClientHandler extends Thread {
   private Boolean directionSet = false;
   private Boolean startGame = false;
   private Boolean canSendBoard = false;
-  private Boolean endGame = false;
+  private Boolean lost = false;
+  private Boolean win = false;
   private Boolean dirChngReq = false;
 
   public void setStart() {  waitForStart = false;}
   public void setStartGame() {startGame = true;}
-  public void setEndGame() {endGame = true;}
   public void setDirChngReq () {dirChngReq = false;}
   public void sendPlayers(String p) {
     canSendPlayers = true;
@@ -34,6 +34,12 @@ public class ClientHandler extends Thread {
   public void sendBoard(String board) {
     this.board = board;
     canSendBoard = true;
+  }
+  public void setLost() {
+    lost = true;
+  }
+  public void setWin() {
+    win = true;
   }
 
   public Boolean isLogged() {return logged;}
@@ -52,54 +58,55 @@ public class ClientHandler extends Thread {
   @Override
   public void run() {
     try {
-      int counter = 0;
 
       outputStream.writeUTF("CONNECT");
       playerLogin = inputStream.readUTF();
       System.out.println("Player "+id+" login: "+playerLogin);
       logged = true;
-      while(true) {
-        TimeUnit.SECONDS.sleep(1);
-        if (!waitForStart) {
-          outputStream.writeUTF("START "+id);
-          break;
+        while(true) {
+          TimeUnit.SECONDS.sleep(1);
+          if (!waitForStart) {
+            outputStream.writeUTF("START "+id);
+            break;
+          }
         }
-      }
-      while(true) {
-        TimeUnit.SECONDS.sleep(1);
-        if(canSendPlayers) {
-          outputStream.writeUTF("PLAYERS "+playerCords);
-          break;
+        while(true) {
+          TimeUnit.SECONDS.sleep(1);
+          if(canSendPlayers) {
+            outputStream.writeUTF("PLAYERS "+playerCords);
+            break;
+          }
         }
-      }
-      direction = inputStream.readUTF().charAt(6);
-      directionSet = true;
-      while (true) {
-        TimeUnit.SECONDS.sleep(1);
-        if (startGame) {
-          outputStream.writeUTF("GAME");
-          break;
+        direction = inputStream.readUTF().charAt(6);
+        directionSet = true;
+        while (true) {
+          TimeUnit.SECONDS.sleep(1);
+          if (startGame) {
+            outputStream.writeUTF("GAME");
+            break;
+          }
         }
-      }
-      while(true) {
-        if (canSendBoard) {
-          outputStream.writeUTF(board);
-          canSendBoard = false;
+        while(true) {
+          if (canSendBoard) {
+            outputStream.writeUTF(board);
+            canSendBoard = false;
+          }
+          if(inputStream.available() > 0) {
+            direction = inputStream.readUTF().charAt(5);
+            System.out.println("Direction from client "+id+": "+direction);
+            dirChngReq = true;
+          }
+          if (lost) {
+            outputStream.writeUTF("LOST");
+            break;
+          }
+          if (win) {
+            outputStream.writeUTF("WIN");
+            break;
+          }
+          TimeUnit.MILLISECONDS.sleep(10);
         }
-        if(inputStream.available() > 0) {
-          direction = inputStream.readUTF().charAt(5);
-          System.out.println("Direction from client "+id+": "+direction);
-          dirChngReq = true;
-        }
-        if (endGame) {
-          break;
-        }
-        TimeUnit.MILLISECONDS.sleep(10);
-      }
-
-      System.out.println("HANDLER: SENDING END");
-      outputStream.writeUTF("END");
-
+      
 
 
 

@@ -7,9 +7,11 @@ public class Inputer extends Thread {
   private char dir;
   private Boolean dirChanged = false;
   private Boolean stop = false;
+  private Boolean stopped = false;
 
   public char getDir() {return dir;}
   public Boolean getDirChanged() {return dirChanged;}
+  public Boolean getStopped() {return stopped;}
   public void setDirChanged() {dirChanged = false;}
   public void setStop() {stop = true;}
 

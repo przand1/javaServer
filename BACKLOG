@@ -1,5 +1,4 @@
 TO DO:
-- CLIENT: WYSYŁANIE KIERUNKU NIE DZIAŁA
 - komunikaty OK, ERROR
 - tablica wyników
 - kilka gier zamiast jednej
@@ -9,20 +8,15 @@ TO DO:
 
 
 obecnie pracuję nad:
-  TEST KLIENTA
-  - stworzyć sample srever
-  - testy testy
-  STWIERDZONO:
--komunikat dotarł do handlera
--komunikat dotarł do gry
--RUSZAM GRACZEM 2 ZAMIAST 1 - PROBLEM Z INDEKSAMI?!
+- kilka gier zamiast jednej
 
 
 WORKING FOR NOW:
--OBSŁUGA KOLIZJII
+-OBSŁUGA KOLIZJI
 -MECHANIZM USUWANIA PRZEGRANEGO GRACZA
   - gdzie trzeba sprawdzić flagę Player.lost ?
     - Game: v
     - Server: v
   - Server musi wysłać info do HANDLERA
     - Handler: v
+- STEROWANIE DZIAŁA POPRAWNIE
