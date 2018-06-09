@@ -12,9 +12,6 @@ public class Player {
   private Boolean lostNotify = false;
 
   public Player(int ID) {
-    Random r = new Random();
-    X = (int)(r.nextInt(50));
-    Y = (int)(r.nextInt(50));
     this.ID = ID;
   }
   public void setID( int ID ) { this.ID = ID; }
@@ -22,6 +19,11 @@ public class Player {
   public void setY( int Y ) { this.Y = Y; }
   public void setLost( Boolean lost ) { this.lost = lost; }
   public void setLostNotify( Boolean lostNotify ) { this.lostNotify = lostNotify; }
+  public void setRandomXY() {
+    Random r = new Random();
+    X = (int)(r.nextInt(50));
+    Y = (int)(r.nextInt(50));
+  }
   public void setDir( char dir ) {
     switch(dir) {
       case 'r':

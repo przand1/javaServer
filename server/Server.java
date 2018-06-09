@@ -38,13 +38,17 @@ public class Server {
             if (playerHandlers[0].isLogged() && playerHandlers[1].isLogged() && playerHandlers[2].isLogged() && playerHandlers[3].isLogged() && playerHandlers[4].isLogged()) {
               for (int i =0;i<5 ;++i ) {
                 playerList[i] = new Player(playerHandlers[i].getID());                    //TWORZENIE GRACZY
-                                                                                          //Player LOSUJE SOBIE CORDS
-                playerCords += (playerList[i].getID() + ":("+playerList[i].getX()+","+playerList[i].getY()+") ");//CORDS
-                playerHandlers[i].setStart();
               }
             break;
             }
           }catch(InterruptedException e){System.err.println("INTERRUPTED");}
+        }
+//--------------------------------------- TU BĘDZIE POCZĄTEK PĘTLI ----------------------------------------------------------------------
+for (int round =0;round<5 ;++round) {
+        for (int i =0;i<5 ;++i) {
+          playerList[i].setRandomXY();                             //Player LOSUJE SOBIE CORDS
+          playerCords += (playerList[i].getID() + ":("+playerList[i].getX()+","+playerList[i].getY()+") ");//CORDS
+          playerHandlers[i].setStart();
         }
         for (int i =0;i<5 ;++i ) {
           playerHandlers[i].sendPlayers(playerCords);
@@ -95,14 +99,18 @@ public class Server {
                 }
               }
             } catch(InterruptedException e) {e.printStackTrace();}
-          }
-          //TODO wysłać WIN do ostatniego gracza
+          } //KONIEC RUNDY
+
           for (Player p : playerList) {
             if (!p.getLost()) {
-              playerHandlers[p.getID()-1].setWin(); //TODO wysłać WIN do ostatniego gracza
+              playerHandlers[p.getID()-1].setWin(); // WIN do ostatniego gracza
             }
           }
-      
+
+          // PRZYGOTOWANIE DO NASTĘPNEJ ITERACJI
+          playerCords = "";
+}
+//---------------------------------- TU BĘDZIE KONIEC PĘTLI ----------------------------------------------
       serverSocket.close();
   }
 }

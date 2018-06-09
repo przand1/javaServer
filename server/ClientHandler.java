@@ -63,6 +63,9 @@ public class ClientHandler extends Thread {
       playerLogin = inputStream.readUTF();
       System.out.println("Player "+id+" login: "+playerLogin);
       logged = true;
+//----------------------- TODO POCZĄTEK PĘTLI, SERVER LOSUJE POŁOŻENIA ITP.
+for (int round =0;round<5 ;++round) {
+  System.out.println("DEBUG: HANDLER "+id+" entered round "+round);
         while(true) {
           TimeUnit.SECONDS.sleep(1);
           if (!waitForStart) {
@@ -86,7 +89,7 @@ public class ClientHandler extends Thread {
             break;
           }
         }
-        while(true) {
+        while(true) { //--JEDNA RUNDA
           if (canSendBoard) {
             outputStream.writeUTF(board);
             canSendBoard = false;
@@ -105,9 +108,19 @@ public class ClientHandler extends Thread {
             break;
           }
           TimeUnit.MILLISECONDS.sleep(10);
-        }
-      
+        }//--KONIC RUNDY
 
+        // PRZYGOTOWANIE DO NASTĘPNEJ ITERACJI
+        waitForStart = true;
+        canSendPlayers = false;
+        directionSet = false;
+        startGame = false;
+        canSendBoard = false;
+        lost = false;
+        win = false;
+        dirChngReq = false;
+}
+//----------------------------- TODO KONIEC PĘTLI
 
 
       outputStream.close();

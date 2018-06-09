@@ -16,13 +16,16 @@ public class Client {
       String login = "";
       String board;
 
-      System.out.println("From Server: "+clientInput.readUTF());
+      System.out.println("From Server: "+clientInput.readUTF());//connect
 
       do {
         System.out.println("Login:");
       } while((login = reader.readLine()).equals(""));
 
-      clientOutput.writeUTF("LOGIN "+login);
+      clientOutput.writeUTF("LOGIN "+login);//SEND LOGIN
+
+//--------------------TODO POCZĄTEK PĘTLI
+for (int round =0;round<5 ;++round) {
       System.out.println("Waiting for START...");
       System.out.println(clientInput.readUTF());//START
 
@@ -32,24 +35,25 @@ public class Client {
       System.out.println("DEBUG:SENT Direction");
 
       System.out.println(clientInput.readUTF());//GAME
-      Inputer inputer = new Inputer();
-      inputer.start();
+      //Inputer inputer = new Inputer();
+      //inputer.start();
 
-      while(true) {
+      while(true) {//--------------- JEDNA RUNDA
         board=clientInput.readUTF();
         if (board.equals("LOST") || board.equals("WIN")) {
           System.out.println("YOU "+board);
           break;
         }
         System.out.print(board+'\n');
-        if(inputer.getDirChanged()) {
-          clientOutput.writeUTF("MOVE "+inputer.getDir());
-          inputer.setDirChanged();
-        }
-      }
+        // if(inputer.getDirChanged()) {
+        //  clientOutput.writeUTF("MOVE "+inputer.getDir());
+        //  inputer.setDirChanged();
+        // }
+      }//KONIEC RUNDY?
 
-      inputer.setStop();
-
+      //inputer.setStop();//TODO PROBLEM!!!
+//-------------TODO KONIEC PĘTLI???
+}
       reader.close();
       clientInput.close();
       clientOutput.close();

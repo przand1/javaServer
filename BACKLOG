@@ -5,11 +5,34 @@ TO DO:
 - wywoływanie błędów
 - zabezpieczenia
 - Client: wywala IOException po zakończeniu
+- wyrzucanie po 3s
+  - granie w mniej niż 5 osób - zmienić '5' na numOfPlayers ?
+- 100 złych komunikatów: errorCount++ dla każdego gracza?
 
 
 obecnie pracuję nad:
 - kilka gier zamiast jednej
+    - PODZIELIĆ PROJEKT NA BLOKI WYKONYWANE RAZ I WYK. W PĘTLI
+      - SERVER v
+      - HANDLER v
+      - Client x
+    - JAKIE FLAGI/ZMIENNE ZMIENIĆ?
 
+      - SERVER:
+        - playerCords v
+
+      -HANDLER:
+        -waitForStart v
+        -canSendPlayers v
+        -directionSet v
+        -startGame v
+        -canSendBoard v
+        -dirChngReq v
+        -LOST v
+        -WIN v
+
+      -Client:
+        - co z inputerem?
 
 WORKING FOR NOW:
 -OBSŁUGA KOLIZJI
