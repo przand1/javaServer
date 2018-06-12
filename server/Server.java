@@ -149,28 +149,46 @@ for (int round =0;round<5 ;++round) {
       int prevScore=score[0]+1;
       int[] indexed = new int[5];
 
-      for (int i =0;i<5 ;++i ) {
-        for (int j=0; j<5;++j ) {
-          if ( score[j]<=minScore && score[j]>prevScore ) { //ZNAJDŹ NOWE MINIMUM
-            minScore = score[j];
-            minIndex = j;
-          }
-          prevScore = minScore;
-          ++minScore;
-          indexed[i]=minIndex;
-        }
+      int temp;
+      for(int i=0;i<4;i++) {
+      	for(int j=1;j<5;j++) {
+      		if(score[i] > score[j]) {
+
+      			temp = score[i];
+      			score[i]=score[j];
+      			score[j]=temp;
+
+      			temp = indexed[i];
+      			indexed[i]=indexed[j];
+      			indexed[j]=temp;
+      		}
+      	}
       }
-      System.out.println("DEBUG: score");
-      for (int i =0;i<5 ;++i) {
-        System.out.println(score[i]);
+      for(int i=0;i<5;i++) {
+      	scoreString += ( playerHandlers[indexed[i]].getPlayerLogin() + ": " + score[indexed[i]] + " ";
       }
-      System.out.println("DEBUG: indexed");
-      for (int i =0;i<5 ;++i) {
-        System.out.println(indexed[i]);
-      }
-      for (int i =0;i<5 ;++i) {
-        scoreString += (playerHandlers[indexed[i]].getPlayerLogin() + ": " + score[indexed[i]] + " ");
-      }
+      // for (int i =0;i<5 ;++i ) {
+      //   for (int j=0; j<5;++j ) {
+      //     if ( score[j]<=minScore && score[j]>prevScore ) { //ZNAJDŹ NOWE MINIMUM
+      //       minScore = score[j];
+      //       minIndex = j;
+      //     }
+      //     prevScore = minScore;
+      //     ++minScore;
+      //     indexed[i]=minIndex;
+      //   }
+      // }
+      // System.out.println("DEBUG: score");
+      // for (int i =0;i<5 ;++i) {
+      //   System.out.println(score[i]);
+      // }
+      // System.out.println("DEBUG: indexed");
+      // for (int i =0;i<5 ;++i) {
+      //   System.out.println(indexed[i]);
+      // }
+      // for (int i =0;i<5 ;++i) {
+      //   scoreString += (playerHandlers[indexed[i]].getPlayerLogin() + ": " + score[indexed[i]] + " ");
+      // }
 
       for (int i =0;i<5 ;++i ) {
         playerHandlers[i].setScore(scoreString);
