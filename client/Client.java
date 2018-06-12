@@ -3,8 +3,97 @@ package client;
 import java.net.*;
 import java.io.*;
 import java.util.concurrent.TimeUnit;
+import java.util.Random;
 
 public class Client {
+
+  private static int myX;
+  private static int myY;
+  private static int myNumber;
+  private static char myDir;
+  private static char myMove;
+  private static String[] myBoard = new String[50];
+  private static Random rand = new Random();
+  private static int randInt;
+
+  public static char avoidCollision() {
+    char toReturn = 'S';
+    switch (myDir) {
+      case 'w':
+      case 'W':
+          System.out.println("pole przede mną: "+myBoard[myY-1].charAt(myX));
+        if( (myBoard[myY-1].charAt(myX) != '0') || myY == 0) {
+          System.out.println("CASE W. X="+myX+" Y="+myY);
+          if ((myBoard[myY].charAt(myX-1) != '0') || myX == 0) {
+            toReturn = 'R';   //  ---->
+            myDir = 'D';      //  \
+            myX++;            //  |
+          }
+          else {
+            toReturn = 'L';   //  <--
+            myDir = 'A';      //    |
+            myX--;            //    |
+          }
+        }
+
+        break;
+      case 'a':
+      case 'A':
+          System.out.println("pole przede mną: "+myBoard[myY].charAt(myX-1));
+        if((myBoard[myY].charAt(myX-1) != '0') || myX == 0) {
+          System.out.println("CASE A. X="+myX+" Y="+myY);
+          if ((myBoard[myY+1].charAt(myX) != '0') || myY == 49) {
+            toReturn = 'R';   //    ^
+            myDir = 'W';      //    |
+            myY--;            //    ------
+          }
+          else {
+            toReturn = 'L';   //  -------
+            myDir = 'S';      //  |
+            myY++;            //  v
+          }
+        }
+
+        break;
+      case 's':
+      case 'S':
+          System.out.println("pole przede mną: "+myBoard[myY+1].charAt(myX));
+        if((myBoard[myY+1].charAt(myX) != '0') || myY == 49) {
+          System.out.println("CASE S. X="+myX+" Y="+myY);
+          if ((myBoard[myY].charAt(myX+1) != '0') || myX == 49) {
+            toReturn = 'R'; //    |
+            myDir = 'A';    //    |
+            myX++;          // <---
+          }
+          else {
+            toReturn = 'L'; //  |
+            myDir = 'D';    //  |
+            myX--;          //  ---->
+        }
+        }
+
+        break;
+      case 'd':
+      case 'D':
+          System.out.println("pole przede mną: "+myBoard[myY].charAt(myX+1));
+        if((myBoard[myY].charAt(myX+1) != '0') || myX == 49) {
+          System.out.println("CASE D. X="+myX+" Y="+myY);
+          if ((myBoard[myY-1].charAt(myX) != '0') || myY == 0) {
+            toReturn = 'R'; //  ---
+            myDir = 'S';    //    |
+            myY++;          //    v
+          }
+          else {
+            toReturn = 'L'; //    ^
+            myDir = 'W';    //    |
+            myY--;          //  ---
+          }
+        }
+
+        break;
+    }
+    return toReturn;
+  }
 
   public static void main(String[] args) {
     try {
@@ -15,6 +104,8 @@ public class Client {
       BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
       String login = "";
       String board;
+      String cordBuffer;
+
 
       System.out.println("From Server: "+clientInput.readUTF());//connect
 
@@ -24,36 +115,58 @@ public class Client {
 
       clientOutput.writeUTF("LOGIN "+login);//SEND LOGIN
 
-//--------------------TODO POCZĄTEK PĘTLI
-for (int round =0;round<5 ;++round) {
       System.out.println("Waiting for START...");
-      System.out.println(clientInput.readUTF());//START
+      cordBuffer = clientInput.readUTF();
+      System.out.println(cordBuffer);//START
+      myNumber = Integer.parseInt(cordBuffer.split(" ",2)[1]);
+      System.out.println("My number: "+myNumber);
 
-      System.out.println(clientInput.readUTF());//PLAYERS
+//-------------------- POCZĄTEK PĘTLI
+for (int round =0;round<5 ;++round) {
+      cordBuffer = clientInput.readUTF();
+      System.out.println(cordBuffer);//PLAYERS
+
+// wczytywanie współrzędnych
+      myX = Integer.parseInt(cordBuffer.split(" ")[(2*myNumber)-1]);
+      myY = Integer.parseInt(cordBuffer.split(" ")[(2*myNumber)]);
+      System.out.println("my cords: "+myX+" "+myY);
+
+
       System.out.println("Enter direction {W,A,S,D}:");
-      clientOutput.writeUTF("BEGIN "+reader.readLine());//DIRECTION
+      myDir = reader.readLine().charAt(0);
+      clientOutput.writeUTF("BEGIN "+(myDir+""));//DIRECTION
       System.out.println("DEBUG:SENT Direction");
 
       System.out.println(clientInput.readUTF());//GAME
-      //Inputer inputer = new Inputer();
-      //inputer.start();
 
       while(true) {//--------------- JEDNA RUNDA
         board=clientInput.readUTF();
-        if (board.equals("LOST") || board.equals("WIN")) {
-          System.out.println("YOU "+board);
+        if (board.split(" ")[0].equals("LOST") || board.equals("WIN")) {
+          System.out.println(board);
           break;
         }
-        System.out.print(board+'\n');
-        // if(inputer.getDirChanged()) {
-        //  clientOutput.writeUTF("MOVE "+inputer.getDir());
-        //  inputer.setDirChanged();
-        // }
-      }//KONIEC RUNDY?
 
-      //inputer.setStop();//TODO PROBLEM!!!
-//-------------TODO KONIEC PĘTLI???
+        //TODO analiza planszy
+        //  s0  s1  s2  s3  s4 ... s49  \n
+        // s51  s52 s53 ...        s100 \n
+        // s102
+        // ...
+        // myBoard = board.split("\n");
+        // //TODO reakcja/zimana kierunku?
+        // if((myMove = avoidCollision()) != 'S')
+        //  clientOutput.writeUTF("MOVE "+myMove);
+
+        randInt = rand.nextInt(10);
+        if (randInt==0) clientOutput.writeUTF("MOVE R");
+        else if (randInt==1) clientOutput.writeUTF("MOVE L");
+        System.out.print(board+'\n');
+      }//KONIEC RUNDY
+
+//------------- KONIEC PĘTLI
 }
+
+      System.out.println(clientInput.readUTF());
+
       reader.close();
       clientInput.close();
       clientOutput.close();

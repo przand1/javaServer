@@ -13,10 +13,16 @@ public class Server {
   private static Player[] playerList = new Player[5];
   private static String playerCords = "";
   private static int playersLeft =  5;
+  private static Game game;
+  private static int[] score = new int[5];
+  private static String scoreString = "KONIEC ";
 
   public static void main(String[] args) throws IOException {
 
       serverSocket = new ServerSocket(9999);
+      for (int i =0;i<5;i++ ) {
+        score[i]=0;
+      }
 
       while(numOfPlayers < 5) {
         clientSocket = null;
@@ -43,15 +49,19 @@ public class Server {
             }
           }catch(InterruptedException e){System.err.println("INTERRUPTED");}
         }
-//--------------------------------------- TU BĘDZIE POCZĄTEK PĘTLI ----------------------------------------------------------------------
+        for (int i =0;i<5 ;++i) {
+          playerHandlers[i].setStart();
+          System.out.println("SERVER: setStart "+(i+1));
+        }
+//----------------------------------------------  POCZĄTEK PĘTLI ----------------------------------------------------------------------
 for (int round =0;round<5 ;++round) {
         for (int i =0;i<5 ;++i) {
           playerList[i].setRandomXY();                             //Player LOSUJE SOBIE CORDS
-          playerCords += (playerList[i].getID() + ":("+playerList[i].getX()+","+playerList[i].getY()+") ");//CORDS
-          playerHandlers[i].setStart();
+          playerCords += (playerList[i].getX()+" "+playerList[i].getY()+" ");//CORDS
         }
         for (int i =0;i<5 ;++i ) {
           playerHandlers[i].sendPlayers(playerCords);
+          System.out.println("SERVER: sendPlayers "+(i+1));
         }
         while(true) {
           try {
@@ -60,13 +70,14 @@ for (int round =0;round<5 ;++round) {
               for (int i =0;i<5 ;++i ) {
                 playerList[i].initDir(playerHandlers[i].getDirection());  //GRACZ DOSTAJE KIERUNEK Z HANDLERA
                 playerHandlers[i].setStartGame();
+                System.out.println("SERVER: setStartGame "+(i+1));
               }
               break;
             }
           }catch(InterruptedException e){System.err.println("INTERRUPTED");}
         }
 
-        Game game = new Game(playerList); //PRZKAZANIE GRACZY GRZE
+        game = new Game(playerList); //PRZKAZANIE GRACZY GRZE
                                           //GRA DOSTAJE GRACZY Z CORDS I DIRECTION
 
         while (playersLeft > 1) {       //TU SIĘ DZIEJE WŁAŚCIWA GRA
@@ -76,8 +87,10 @@ for (int round =0;round<5 ;++round) {
               for (int i =0;i<5 ;++i ) { //SPRAWDŹ, CZY KTOŚ NIE PRZEGRAŁ
                 if (playerList[i].getLostNotify()) {
                   playerList[i].setLostNotify(false);
-                  playerHandlers[i].setLost();//TODO: zmienić na LOST + miejsce
+                  playerHandlers[i].setLost(playersLeft);//TODO: zmienić na LOST + miejsce
+                  score[i]+=playersLeft;
                   playersLeft--;
+                  System.out.println("SERVER: "+playerHandlers[i].getPlayerLogin()+" LOST.");
                 }
               }
 
@@ -85,7 +98,6 @@ for (int round =0;round<5 ;++round) {
               for (int i =0;i<5 ;++i ) {  //SPRAWDŹ, CZY KTOŚ NIE ŻĄDA ZMIANY KIERUNKU
                 if (playerHandlers[i].getDirChngReq() && !playerList[i].getLost()) {
                   game.chngPlayerDir(playerHandlers[i].getID(),playerHandlers[i].getDirection());
-                  System.out.println("SERVER: Dostałem dirChngReq od gracza "+playerHandlers[i].getID());
                   playerHandlers[i].setDirChngReq();
                 }
               }
@@ -104,13 +116,65 @@ for (int round =0;round<5 ;++round) {
           for (Player p : playerList) {
             if (!p.getLost()) {
               playerHandlers[p.getID()-1].setWin(); // WIN do ostatniego gracza
+              System.out.println("SERVER: "+playerHandlers[p.getID()-1].getPlayerLogin()+" WON.");
+              score[p.getID() - 1]++;
             }
           }
-
+          while(true) {
+            try {
+              System.out.println("SERVER: Waiting for players to finish round "+(round+1));
+              TimeUnit.SECONDS.sleep(1);
+              if (playerHandlers[0].getRoundFinished() && playerHandlers[1].getRoundFinished() && playerHandlers[2].getRoundFinished() && playerHandlers[3].getRoundFinished() && playerHandlers[4].getRoundFinished()) {
+                for (int i =0;i<5 ;++i ) {
+                  playerHandlers[i].setRoundFinished();
+                }
+                System.out.println("SERVER: ALL ABOARD!");
+                break;
+              }
+            }catch(InterruptedException e){System.err.println("INTERRUPTED");}
+          }
           // PRZYGOTOWANIE DO NASTĘPNEJ ITERACJI
           playerCords = "";
+          playersLeft = 5;
+          for (Player p : playerList) {
+            p.setLost(false);
+          }
+
 }
-//---------------------------------- TU BĘDZIE KONIEC PĘTLI ----------------------------------------------
+//------------------------------------------- KONIEC PĘTLI ----------------------------------------------
+//    [7,2,8,12,5] punkty
+  //   0 1 2 3  4  gracze
+      int minScore=score[0];
+      int minIndex=0;
+      int prevScore=score[0]+1;
+      int[] indexed = new int[5];
+
+      for (int i =0;i<5 ;++i ) {
+        for (int j=0; j<5;++j ) {
+          if ( score[j]<=minScore && score[j]>prevScore ) { //ZNAJDŹ NOWE MINIMUM
+            minScore = score[j];
+            minIndex = j;
+          }
+          prevScore = minScore;
+          ++minScore;
+          indexed[i]=minIndex;
+        }
+      }
+      System.out.println("DEBUG: score");
+      for (int i =0;i<5 ;++i) {
+        System.out.println(score[i]);
+      }
+      System.out.println("DEBUG: indexed");
+      for (int i =0;i<5 ;++i) {
+        System.out.println(indexed[i]);
+      }
+      for (int i =0;i<5 ;++i) {
+        scoreString += (playerHandlers[indexed[i]].getPlayerLogin() + ": " + score[indexed[i]] + " ");
+      }
+
+      for (int i =0;i<5 ;++i ) {
+        playerHandlers[i].setScore(scoreString);
+      }
       serverSocket.close();
   }
 }

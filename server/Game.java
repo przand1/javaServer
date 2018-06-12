@@ -41,7 +41,6 @@ public class Game {
 
   public void chngPlayerDir(int playerId,char dir) { //WYWOŁYWANE PRZEZ SERWER
     playerList[playerId-1].setDir(dir);
-    System.out.println("GAME: invoked Player.setDir() for Player "+playerList[playerId-1].getID());
   }
 
   public void runOneTurn() {                    //DODAĆ OBSŁUGĘ KOLIZJII

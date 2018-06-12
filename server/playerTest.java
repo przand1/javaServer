@@ -6,16 +6,29 @@ import java.util.Scanner;
 public class playerTest {
   public static void main(String[] args) {
 
-    char[] A = {'a','b','c','d'};
-    test T = new test(A);
-    System.out.println("main class: "+A[0]);
-    System.out.println("test class: "+T.getD());
-    T.modify();
-    System.out.println("test after mod: "+T.getD());
-    System.out.println("main after mod: "+A[0]);
-    A[0]='c';
-    System.out.println("test after mod: "+T.getD());
-    System.out.println("main after mod: "+A[0]);
+Random rand=new Random();
+int n;
+for (int i=0;i<100 ;i++ ) {
+  if((n =rand.nextInt(11))<2) System.out.println(n);
+}
+
+// //zaokrąglenia
+//   int i = 5;
+//   i/=2;
+//   System.out.println(i);
+
+
+//przkazywanie obiktów
+    // char[] A = {'a','b','c','d'};
+    // test T = new test(A);
+    // System.out.println("main class: "+A[0]);
+    // System.out.println("test class: "+T.getD());
+    // T.modify();
+    // System.out.println("test after mod: "+T.getD());
+    // System.out.println("main after mod: "+A[0]);
+    // A[0]='c';
+    // System.out.println("test after mod: "+T.getD());
+    // System.out.println("main after mod: "+A[0]);
 
 
     //TEST ZMIANY KIERUNKU

@@ -23,10 +23,17 @@ public class ClientHandler extends Thread {
   private Boolean lost = false;
   private Boolean win = false;
   private Boolean dirChngReq = false;
+  private Boolean roundFinished = false;
+  private Boolean canSendScore = false;
+
+
+  private int position;
+  private String score;
 
   public void setStart() {  waitForStart = false;}
   public void setStartGame() {startGame = true;}
   public void setDirChngReq () {dirChngReq = false;}
+  public void setRoundFinished () {roundFinished = false;}
   public void sendPlayers(String p) {
     canSendPlayers = true;
     playerCords = p;
@@ -35,18 +42,25 @@ public class ClientHandler extends Thread {
     this.board = board;
     canSendBoard = true;
   }
-  public void setLost() {
+  public void setLost(int position) {
     lost = true;
+    this.position = position;
   }
   public void setWin() {
     win = true;
+  }
+  public void setScore(String score) {
+    this.score = score;
+    canSendScore = true;
   }
 
   public Boolean isLogged() {return logged;}
   public Boolean directionIsSet() {return directionSet;}
   public Boolean getDirChngReq () {return dirChngReq;}
+  public Boolean getRoundFinished () {return roundFinished;}
   public int getID () {return id;}
   public char getDirection() {return direction;}
+  public String getPlayerLogin() {return playerLogin;}
 
   public ClientHandler(Socket s,DataOutputStream out,DataInputStream in, int id) {
     socket = s;
@@ -60,19 +74,22 @@ public class ClientHandler extends Thread {
     try {
 
       outputStream.writeUTF("CONNECT");
-      playerLogin = inputStream.readUTF();
+      playerLogin = inputStream.readUTF().split(" ",2)[1];
       System.out.println("Player "+id+" login: "+playerLogin);
       logged = true;
-//----------------------- TODO POCZĄTEK PĘTLI, SERVER LOSUJE POŁOŻENIA ITP.
-for (int round =0;round<5 ;++round) {
-  System.out.println("DEBUG: HANDLER "+id+" entered round "+round);
-        while(true) {
-          TimeUnit.SECONDS.sleep(1);
-          if (!waitForStart) {
-            outputStream.writeUTF("START "+id);
-            break;
-          }
+      while(true) {
+        TimeUnit.SECONDS.sleep(1);
+        if (!waitForStart) {
+          outputStream.writeUTF("START "+id);
+          System.out.println("DEBUG: HANDLER "+id+" sent START");
+          break;
         }
+      }
+      String directionBuffer;
+//----------------------- POCZĄTEK PĘTLI, SERVER LOSUJE POŁOŻENIA ITP.
+for (int round =0;round<5 ;++round) {
+  System.out.println("DEBUG: HANDLER "+id+" entered round "+(round+1));
+
         while(true) {
           TimeUnit.SECONDS.sleep(1);
           if(canSendPlayers) {
@@ -80,7 +97,9 @@ for (int round =0;round<5 ;++round) {
             break;
           }
         }
-        direction = inputStream.readUTF().charAt(6);
+        do {directionBuffer = inputStream.readUTF();} while ( !(directionBuffer.split(" ")[0].equals("BEGIN")) );
+        System.out.println("HANDLER "+id+" direction: "+directionBuffer);
+        direction = directionBuffer.charAt(6);
         directionSet = true;
         while (true) {
           TimeUnit.SECONDS.sleep(1);
@@ -100,7 +119,7 @@ for (int round =0;round<5 ;++round) {
             dirChngReq = true;
           }
           if (lost) {
-            outputStream.writeUTF("LOST");
+            outputStream.writeUTF("LOST "+position);
             break;
           }
           if (win) {
@@ -109,6 +128,8 @@ for (int round =0;round<5 ;++round) {
           }
           TimeUnit.MILLISECONDS.sleep(10);
         }//--KONIC RUNDY
+
+        roundFinished = true;
 
         // PRZYGOTOWANIE DO NASTĘPNEJ ITERACJI
         waitForStart = true;
@@ -120,8 +141,12 @@ for (int round =0;round<5 ;++round) {
         win = false;
         dirChngReq = false;
 }
-//----------------------------- TODO KONIEC PĘTLI
+//----------------------------- KONIEC PĘTLI
 
+      while (!canSendScore) {
+        TimeUnit.MILLISECONDS.sleep(500);
+      }
+      outputStream.writeUTF(score);
 
       outputStream.close();
       inputStream.close();
