@@ -144,14 +144,15 @@ for (int round =0;round<5 ;++round) {
 //------------------------------------------- KONIEC PĘTLI ----------------------------------------------
 //    [7,2,8,12,5] punkty
   //   0 1 2 3  4  gracze
-      int minScore=score[0];
-      int minIndex=0;
-      int prevScore=score[0]+1;
       int[] indexed = new int[5];
-
+      for(int j=1;j<5;j++) {
+        indexed[j]=j;
+      }
+      System.out.println("SCORE: "+score[0]+" "+score[1]+" "+score[2]+" "+score[3]+" "+score[4]);
+      System.out.println("INDEXED: "+indexed[0]+" "+indexed[1]+" "+indexed[2]+" "+indexed[3]+" "+indexed[4]);
       int temp;
       for(int i=0;i<4;i++) {
-      	for(int j=1;j<5;j++) {
+      	for(int j=i+1;j<5;j++) {
       		if(score[i] > score[j]) {
 
       			temp = score[i];
@@ -163,9 +164,11 @@ for (int round =0;round<5 ;++round) {
       			indexed[j]=temp;
       		}
       	}
+        System.out.println("SCORE: "+score[0]+" "+score[1]+" "+score[2]+" "+score[3]+" "+score[4]);
+        System.out.println("INDEXED: "+indexed[0]+" "+indexed[1]+" "+indexed[2]+" "+indexed[3]+" "+indexed[4]);
       }
       for(int i=0;i<5;i++) {
-      	scoreString += ( playerHandlers[indexed[i]].getPlayerLogin() + ": " + score[indexed[i]] + " ";
+      	scoreString += ( playerHandlers[indexed[i]].getPlayerLogin() + ": " + score[i] + " ");
       }
       // for (int i =0;i<5 ;++i ) {
       //   for (int j=0; j<5;++j ) {
