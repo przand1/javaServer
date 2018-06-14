@@ -74,14 +74,20 @@ public class ClientHandler extends Thread {
     try {
 
       outputStream.writeUTF("CONNECT");
-      playerLogin = inputStream.readUTF().split(" ",2)[1];
+      playerLogin = inputStream.readUTF();
+      if ( (!(playerLogin.split(" ")[0].equals("LOGIN"))) || playerLogin.split(" ")[1].equals("")) {
+        outputStream.writeUTF("ERROR");//TODO wywal go
+      } else {
+        playerLogin = playerLogin.split(" ",2)[1];
+        outputStream.writeUTF("OK");
+      }
+
       System.out.println("Player "+id+" login: "+playerLogin);
       logged = true;
       while(true) {
         TimeUnit.SECONDS.sleep(1);
         if (!waitForStart) {
           outputStream.writeUTF("START "+id);
-          System.out.println("DEBUG: HANDLER "+id+" sent START");
           break;
         }
       }
@@ -89,6 +95,9 @@ public class ClientHandler extends Thread {
 //----------------------- POCZĄTEK PĘTLI, SERVER LOSUJE POŁOŻENIA ITP.
 for (int round =0;round<5 ;++round) {
   System.out.println("DEBUG: HANDLER "+id+" entered round "+(round+1));
+  if (round>0) {
+    outputStream.writeUTF("ROUND "+(round+1));
+  }
 
         while(true) {
           TimeUnit.SECONDS.sleep(1);
@@ -97,10 +106,16 @@ for (int round =0;round<5 ;++round) {
             break;
           }
         }
-        do {directionBuffer = inputStream.readUTF();} while ( !(directionBuffer.split(" ")[0].equals("BEGIN")) );
-        System.out.println("HANDLER "+id+" direction: "+directionBuffer);
-        direction = directionBuffer.charAt(6);
-        directionSet = true;
+        directionBuffer = inputStream.readUTF();
+        if( (!(directionBuffer.split(" ")[0].equals("BEGIN"))) || directionBuffer.split(" ")[1].equals("")) {
+          outputStream.writeUTF("ERROR");
+          //TODO wywal go
+        } else {
+          outputStream.writeUTF("OK");
+          System.out.println("HANDLER "+id+" direction: "+directionBuffer);
+          direction = directionBuffer.charAt(6);
+          directionSet = true;
+        }
         while (true) {
           TimeUnit.SECONDS.sleep(1);
           if (startGame) {
@@ -114,9 +129,16 @@ for (int round =0;round<5 ;++round) {
             canSendBoard = false;
           }
           if(inputStream.available() > 0) {
-            direction = inputStream.readUTF().charAt(5);
-            System.out.println("Direction from client "+id+": "+direction);
-            dirChngReq = true;
+            directionBuffer = inputStream.readUTF();
+            if( (!(directionBuffer.split(" ")[0].equals("MOVE"))) || directionBuffer.split(" ")[1].equals("")) {
+              outputStream.writeUTF("ERROR");
+              //TODO wywal go
+            } else {
+              direction = directionBuffer.charAt(5);
+              outputStream.writeUTF("OK");
+              System.out.println("Direction from client "+id+": "+direction);
+              dirChngReq = true;
+            }
           }
           if (lost) {
             outputStream.writeUTF("LOST "+position);

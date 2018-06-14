@@ -114,28 +114,32 @@ public class Client {
       } while((login = reader.readLine()).equals(""));
 
       clientOutput.writeUTF("LOGIN "+login);//SEND LOGIN
+      System.out.println(clientInput.readUTF());//OK
 
       System.out.println("Waiting for START...");
       cordBuffer = clientInput.readUTF();
       System.out.println(cordBuffer);//START
-      myNumber = Integer.parseInt(cordBuffer.split(" ",2)[1]);
-      System.out.println("My number: "+myNumber);
+      // myNumber = Integer.parseInt(cordBuffer.split(" ",2)[1]);
+      // System.out.println("My number: "+myNumber);
 
 //-------------------- POCZĄTEK PĘTLI
 for (int round =0;round<5 ;++round) {
+    if (round>0) {
+      System.out.println(clientInput.readUTF());//ROUND
+    }
       cordBuffer = clientInput.readUTF();
       System.out.println(cordBuffer);//PLAYERS
 
 // wczytywanie współrzędnych
-      myX = Integer.parseInt(cordBuffer.split(" ")[(2*myNumber)-1]);
-      myY = Integer.parseInt(cordBuffer.split(" ")[(2*myNumber)]);
-      System.out.println("my cords: "+myX+" "+myY);
+      // myX = Integer.parseInt(cordBuffer.split(" ")[(2*myNumber)-1]);
+      // myY = Integer.parseInt(cordBuffer.split(" ")[(2*myNumber)]);
+      // System.out.println("my cords: "+myX+" "+myY);
 
 
       System.out.println("Enter direction {W,A,S,D}:");
       myDir = reader.readLine().charAt(0);
       clientOutput.writeUTF("BEGIN "+(myDir+""));//DIRECTION
-      System.out.println("DEBUG:SENT Direction");
+      System.out.println(clientInput.readUTF());//OK
 
       System.out.println(clientInput.readUTF());//GAME
 
@@ -146,26 +150,22 @@ for (int round =0;round<5 ;++round) {
           break;
         }
 
-        //TODO analiza planszy
-        //  s0  s1  s2  s3  s4 ... s49  \n
-        // s51  s52 s53 ...        s100 \n
-        // s102
-        // ...
-        // myBoard = board.split("\n");
-        // //TODO reakcja/zimana kierunku?
-        // if((myMove = avoidCollision()) != 'S')
-        //  clientOutput.writeUTF("MOVE "+myMove);
-
         randInt = rand.nextInt(10);
-        if (randInt==0) clientOutput.writeUTF("MOVE R");
-        else if (randInt==1) clientOutput.writeUTF("MOVE L");
+        if (randInt==0) {
+          clientOutput.writeUTF("MOVE R");
+          clientInput.readUTF();//OK
+        }
+        else if (randInt==1) {
+          clientOutput.writeUTF("MOVE L");
+          clientInput.readUTF();//OK
+        }
         System.out.print(board+'\n');
       }//KONIEC RUNDY
 
 //------------- KONIEC PĘTLI
 }
 
-      System.out.println(clientInput.readUTF());
+      System.out.println(clientInput.readUTF());//score
 
       reader.close();
       clientInput.close();

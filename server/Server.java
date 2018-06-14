@@ -164,34 +164,10 @@ for (int round =0;round<5 ;++round) {
       			indexed[j]=temp;
       		}
       	}
-        System.out.println("SCORE: "+score[0]+" "+score[1]+" "+score[2]+" "+score[3]+" "+score[4]);
-        System.out.println("INDEXED: "+indexed[0]+" "+indexed[1]+" "+indexed[2]+" "+indexed[3]+" "+indexed[4]);
       }
       for(int i=0;i<5;i++) {
       	scoreString += ( playerHandlers[indexed[i]].getPlayerLogin() + ": " + score[i] + " ");
       }
-      // for (int i =0;i<5 ;++i ) {
-      //   for (int j=0; j<5;++j ) {
-      //     if ( score[j]<=minScore && score[j]>prevScore ) { //ZNAJDŹ NOWE MINIMUM
-      //       minScore = score[j];
-      //       minIndex = j;
-      //     }
-      //     prevScore = minScore;
-      //     ++minScore;
-      //     indexed[i]=minIndex;
-      //   }
-      // }
-      // System.out.println("DEBUG: score");
-      // for (int i =0;i<5 ;++i) {
-      //   System.out.println(score[i]);
-      // }
-      // System.out.println("DEBUG: indexed");
-      // for (int i =0;i<5 ;++i) {
-      //   System.out.println(indexed[i]);
-      // }
-      // for (int i =0;i<5 ;++i) {
-      //   scoreString += (playerHandlers[indexed[i]].getPlayerLogin() + ": " + score[indexed[i]] + " ");
-      // }
 
       for (int i =0;i<5 ;++i ) {
         playerHandlers[i].setScore(scoreString);
