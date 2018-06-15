@@ -119,8 +119,6 @@ public class Client {
       System.out.println("Waiting for START...");
       cordBuffer = clientInput.readUTF();
       System.out.println(cordBuffer);//START
-      // myNumber = Integer.parseInt(cordBuffer.split(" ",2)[1]);
-      // System.out.println("My number: "+myNumber);
 
 //-------------------- POCZĄTEK PĘTLI
 for (int round =0;round<5 ;++round) {
@@ -129,12 +127,6 @@ for (int round =0;round<5 ;++round) {
     }
       cordBuffer = clientInput.readUTF();
       System.out.println(cordBuffer);//PLAYERS
-
-// wczytywanie współrzędnych
-      // myX = Integer.parseInt(cordBuffer.split(" ")[(2*myNumber)-1]);
-      // myY = Integer.parseInt(cordBuffer.split(" ")[(2*myNumber)]);
-      // System.out.println("my cords: "+myX+" "+myY);
-
 
       System.out.println("Enter direction {W,A,S,D}:");
       myDir = reader.readLine().charAt(0);

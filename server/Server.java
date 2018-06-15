@@ -148,8 +148,6 @@ for (int round =0;round<5 ;++round) {
       for(int j=1;j<5;j++) {
         indexed[j]=j;
       }
-      System.out.println("SCORE: "+score[0]+" "+score[1]+" "+score[2]+" "+score[3]+" "+score[4]);
-      System.out.println("INDEXED: "+indexed[0]+" "+indexed[1]+" "+indexed[2]+" "+indexed[3]+" "+indexed[4]);
       int temp;
       for(int i=0;i<4;i++) {
       	for(int j=i+1;j<5;j++) {

@@ -1,7 +1,5 @@
 TO DO:
 - SI
-- tablica wyników
-- komunikaty {OK, ERROR, ROUND, ...}
 - zabezpieczenia
 - wyrzucanie po 3s
   - granie w mniej niż 5 osób - zmienić '5' na numOfPlayers ?
@@ -18,3 +16,4 @@ WORKING FOR NOW:
 - STEROWANIE DZIAŁA POPRAWNIE
 - kilka gier zamiast jednej
 - tablica wyników
+- komunikaty {OK, ERROR, ROUND, ...}

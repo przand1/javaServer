@@ -72,14 +72,21 @@ public class ClientHandler extends Thread {
   @Override
   public void run() {
     try {
+      String fileName = "HANDLER_"+id+".log";
+      BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
 
       outputStream.writeUTF("CONNECT");
+      writer.write("S: CONNECT\n");
+
       playerLogin = inputStream.readUTF();
+      writer.write("C: "+playerLogin+"\n");
       if ( (!(playerLogin.split(" ")[0].equals("LOGIN"))) || playerLogin.split(" ")[1].equals("")) {
         outputStream.writeUTF("ERROR");//TODO wywal go
+        writer.write("S: ERROR\n");
       } else {
         playerLogin = playerLogin.split(" ",2)[1];
         outputStream.writeUTF("OK");
+        writer.write("S: OK\n");
       }
 
       System.out.println("Player "+id+" login: "+playerLogin);
@@ -88,6 +95,7 @@ public class ClientHandler extends Thread {
         TimeUnit.SECONDS.sleep(1);
         if (!waitForStart) {
           outputStream.writeUTF("START "+id);
+          writer.write("S: START "+id+"\n");
           break;
         }
       }
@@ -97,21 +105,32 @@ for (int round =0;round<5 ;++round) {
   System.out.println("DEBUG: HANDLER "+id+" entered round "+(round+1));
   if (round>0) {
     outputStream.writeUTF("ROUND "+(round+1));
+    writer.write("S: ROUND "+(round+1)+"\n");
   }
 
         while(true) {
           TimeUnit.SECONDS.sleep(1);
           if(canSendPlayers) {
             outputStream.writeUTF("PLAYERS "+playerCords);
+            writer.write("S: PLAYERS "+playerCords+"\n");
             break;
           }
         }
+
         directionBuffer = inputStream.readUTF();
+        writer.write("C: "+directionBuffer+"\n");
+
         if( (!(directionBuffer.split(" ")[0].equals("BEGIN"))) || directionBuffer.split(" ")[1].equals("")) {
           outputStream.writeUTF("ERROR");
+          writer.write("S: ERROR\n");
           //TODO wywal go
-        } else {
+        } else if( (!(directionBuffer.split(" ")[0].equals("BEGIN"))) || directionBuffer.split(" ")[1].equals("")) {
+            outputStream.writeUTF("ERROR");
+            writer.write("S: ERROR\n");
+            //TODO wywal go
+          } else {
           outputStream.writeUTF("OK");
+          writer.write("S: OK\n");
           System.out.println("HANDLER "+id+" direction: "+directionBuffer);
           direction = directionBuffer.charAt(6);
           directionSet = true;
@@ -120,33 +139,40 @@ for (int round =0;round<5 ;++round) {
           TimeUnit.SECONDS.sleep(1);
           if (startGame) {
             outputStream.writeUTF("GAME");
+            writer.write("S: GAME\n");
             break;
           }
         }
         while(true) { //--JEDNA RUNDA
-          if (canSendBoard) {
-            outputStream.writeUTF(board);
-            canSendBoard = false;
-          }
-          if(inputStream.available() > 0) {
-            directionBuffer = inputStream.readUTF();
-            if( (!(directionBuffer.split(" ")[0].equals("MOVE"))) || directionBuffer.split(" ")[1].equals("")) {
-              outputStream.writeUTF("ERROR");
-              //TODO wywal go
-            } else {
-              direction = directionBuffer.charAt(5);
-              outputStream.writeUTF("OK");
-              System.out.println("Direction from client "+id+": "+direction);
-              dirChngReq = true;
-            }
-          }
           if (lost) {
             outputStream.writeUTF("LOST "+position);
+            writer.write("S: LOST\n");
             break;
           }
           if (win) {
             outputStream.writeUTF("WIN");
+            writer.write("S: WIN\n");
             break;
+          }
+          if (canSendBoard) {
+            outputStream.writeUTF(board);
+            writer.write("S: "+board+"\n");
+            canSendBoard = false;
+          }
+          if(inputStream.available() > 0) {
+            directionBuffer = inputStream.readUTF();
+            writer.write("C: "+directionBuffer+"\n");
+            if( (!(directionBuffer.split(" ")[0].equals("MOVE"))) || directionBuffer.split(" ")[1].equals("")) {
+              outputStream.writeUTF("ERROR");
+              writer.write("S: ERROR\n");
+              //TODO wywal go
+            } else {
+              direction = directionBuffer.charAt(5);
+              outputStream.writeUTF("OK");
+              writer.write("S: OK\n");
+              System.out.println("Direction from client "+id+": "+direction);
+              dirChngReq = true;
+            }
           }
           TimeUnit.MILLISECONDS.sleep(10);
         }//--KONIC RUNDY
@@ -169,7 +195,9 @@ for (int round =0;round<5 ;++round) {
         TimeUnit.MILLISECONDS.sleep(500);
       }
       outputStream.writeUTF(score);
+      writer.write("S: "+score+"\n");
 
+      writer.close();
       outputStream.close();
       inputStream.close();
       socket.close();
